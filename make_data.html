@@ -398,6 +398,101 @@ title wherever you want to display the reference list.
   margin-right: auto;
 }
 </style>
+<pre class="r"><code>&gt; library(dplyr)
+
+Attaching package: &#39;dplyr&#39;
+The following objects are masked from &#39;package:stats&#39;:
+
+    filter, lag
+The following objects are masked from &#39;package:base&#39;:
+
+    intersect, setdiff, setequal, union
+&gt; library(sf)
+Linking to GEOS 3.6.1, GDAL 2.1.3, PROJ 4.9.3</code></pre>
+<pre class="r"><code>&gt; decide &lt;- &quot;../../cleaned_data/GIS/Layers/Lao Decide/data-827086/data.shp&quot; %&gt;%
++   st_read() %&gt;% 
++   select(uscne, uucne) %&gt;% 
++   transmute(district = sub(&quot; *District *$&quot;, &quot;&quot;, uscne),
++             village = sub(&quot;^ *B\\. *&quot;, &quot;&quot;, uucne))
+Reading layer `data&#39; from data source `/Users/choisy/Dropbox/aaa/projects/Ecomore2/cleaned_data/GIS/Layers/Lao Decide/data-827086/data.shp&#39; using driver `ESRI Shapefile&#39;
+Simple feature collection with 481 features and 64 fields
+geometry type:  POINT
+dimension:      XY
+bbox:           xmin: 102.0581 ymin: 17.80944 xmax: 103.136 ymax: 18.3901
+epsg (SRID):    4326
+proj4string:    +proj=longlat +datum=WGS84 +no_defs</code></pre>
+<p>This is the one sent by Olivier through Slack on June 21st:</p>
+<pre class="r"><code>&gt; olivier &lt;- &quot;../../cleaned_data/GIS/Layers/Modified Villages/VIllage1806.shp&quot; %&gt;% 
++   st_read(crs = 4326) %&gt;% 
++   transmute(village = Name)
+Reading layer `VIllage1806&#39; from data source `/Users/choisy/Dropbox/aaa/projects/Ecomore2/cleaned_data/GIS/Layers/Modified Villages/VIllage1806.shp&#39; using driver `ESRI Shapefile&#39;
+Simple feature collection with 472 features and 52 fields (with 2 geometries empty)
+geometry type:  MULTIPOLYGON
+dimension:      XY
+bbox:           xmin: 102.012 ymin: 17.80464 xmax: 103.1544 ymax: 18.43884
+epsg (SRID):    4326
+proj4string:    +proj=longlat +datum=WGS84 +no_defs</code></pre>
+<pre class="r"><code>&gt; pacs &lt;- readr::read_csv(&quot;../census/data/census.csv&quot;,
++                         col_types = paste(c(&quot;ddccciiiiilllc&quot;, rep(&quot;d&quot;, 246)), collapse = &quot;&quot;))</code></pre>
+<pre class="r"><code>&gt; sort(setdiff(olivier$village, pacs$Village_Name))
+  [1] &quot;A Kath&quot;           &quot;Amone&quot;            &quot;Angnhay&quot;          &quot;Beungkhagnongtai&quot; &quot;Bor  na ngoua&quot;    &quot;Champha&quot;         
+  [7] &quot;Chomly&quot;           &quot;Chommanykang&quot;     &quot;Chompethneua&quot;     &quot;Chompethtai&quot;      &quot;Don deng&quot;         &quot;Donekoy&quot;         
+ [13] &quot;Donenokkhum&quot;      &quot;Donepamai&quot;        &quot;Dong mieng&quot;       &quot;Dong par lap&quot;     &quot;Dongnasokneua&quot;    &quot;Dongnasoktay&quot;    
+ [19] &quot;Dongpalanthong&quot;   &quot;Dongsavad&quot;        &quot;Dunggnai&quot;         &quot;Harth sa dee nue&quot; &quot;Hong ka nuea&quot;     &quot;Hong kay koe&quot;    
+ [25] &quot;Hongkare&quot;         &quot;Hongsuphab&quot;       &quot;Houai hong&quot;       &quot;Huoaihorm&quot;        &quot;Kaognod&quot;          &quot;Kaoliew&quot;         
+ [31] &quot;Kayhae&quot;           &quot;Kha ngoy&quot;         &quot;Khamsavath&quot;       &quot;Khoontathong&quot;     &quot;Khoua luang tay&quot;  &quot;Khountatha&quot;      
+ [37] &quot;Koknine&quot;          &quot;Luckhin&quot;          &quot;Meuangnoy&quot;        &quot;Meuangvatha&quot;      &quot;Meuangvathong&quot;    &quot;Nahare&quot;          
+ [43] &quot;Nakhouaikang&quot;     &quot;Nakhouaitai&quot;      &quot;Namkieng  Neua&quot;   &quot;Naxaineua&quot;        &quot;Naxay&quot;            &quot;Nhapha&quot;          
+ [49] &quot;Nong ping&quot;        &quot;Nong tha tay&quot;     &quot;Nongbeuktay&quot;      &quot;Nongbone&quot;         &quot;Nongbouathongnue&quot; &quot;Nongdouangneua&quot;  
+ [55] &quot;Nongmbeukneua&quot;    &quot;Nongmienw&quot;        &quot;Nongnieng&quot;        &quot;Nongntha nuea&quot;    &quot;Nongphanay&quot;       &quot;Nongsangthor&quot;    
+ [61] &quot;Nongtangnuea&quot;     &quot;Nongtangtay&quot;      &quot;Nonkhorneua&quot;      &quot;Nonkhortai&quot;       &quot;Nonkilaek&quot;        &quot;Nonsagnar&quot;       
+ [67] &quot;Nonsavanh&quot;        &quot;Oobmoung&quot;         &quot;Phakthang&quot;        &quot;Phanmanh&quot;         &quot;Phiavath&quot;         &quot;Phinhsavathtay&quot;  
+ [73] &quot;Phonethannuea&quot;    &quot;Phonhsomboun&quot;     &quot;Phonpapaotha&quot;     &quot;Phonsaat&quot;         &quot;Phonsavadnuea&quot;    &quot;Phonsavanneua&quot;   
+ [79] &quot;Phonsavantai&quot;     &quot;Phonsi nouan&quot;     &quot;Phonxay&quot;          &quot;Phoun sa vang&quot;    &quot;Phoun tong chom&quot;  &quot;Phoun tong sa va&quot;
+ [85] &quot;Phoxay&quot;           &quot;Sa phang kha non&quot; &quot;Sa vang&quot;          &quot;Sangveui&quot;         &quot;Saphangmor&quot;       &quot;Saphanthongneua&quot; 
+ [91] &quot;Saphanthongtai&quot;   &quot;Say lom&quot;          &quot;Sea bounhueang&quot;   &quot;Sea dam duan&quot;     &quot;si hom&quot;           &quot;Si sa kate&quot;      
+ [97] &quot;Sibounheuangtha&quot;  &quot;Sibounheuangthon&quot; &quot;Sikaythongnuea&quot;   &quot;Simeuang&quot;         &quot;Sisangvone&quot;       &quot;Sisomsuen&quot;       
+[103] &quot;Somsangar&quot;        &quot;Songkhouakangsae&quot; &quot;Souanmone&quot;        &quot;Sumket&quot;           &quot;Tha deanh deng t&quot; &quot;Thaphalanxay&quot;    
+[109] &quot;Thathong&quot;         &quot;Thatlouangtai&quot;    &quot;Thong khan kham&quot;  &quot;Thong sang nang&quot;  &quot;Thongphanthong&quot;   &quot;Thongphong&quot;      
+[115] &quot;Vangxab&quot;          &quot;Varth chan&quot;       &quot;Vattaynoythong&quot;   &quot;Viengchalern&quot;     &quot;Viengkam&quot;         &quot;Viengsavanh&quot;     
+[121] &quot;Xamkhae&quot;          &quot;Xieng nhuen&quot;      &quot;Xiengda&quot;          &quot;Xokgnoy&quot;          &quot;Xoknoy&quot;          </code></pre>
+<pre class="r"><code>&gt; sort(setdiff(pacs$Village_Name, olivier$village))
+  [1] &quot;Akat&quot;               &quot;Amon&quot;               &quot;Ang-Gnai&quot;           &quot;Anou&quot;               &quot;Bonangoua&quot;          &quot;Bungkhagnong&quot;      
+  [7] &quot;Champa&quot;             &quot;Chomcheng&quot;          &quot;Chommani&quot;           &quot;Chomphet-Nua&quot;       &quot;Chomphet-Tai&quot;       &quot;Chomsi&quot;            
+ [13] &quot;Chormthong&quot;         &quot;Dondeng&quot;            &quot;Dongmiang&quot;          &quot;Dongnaxok-Nua&quot;      &quot;Dongnaxok-Tai&quot;      &quot;Dongpalan-Tha&quot;     
+ [19] &quot;Dongpalan-Thong&quot;    &quot;Dongpalep&quot;          &quot;Dongsavat&quot;          &quot;Donkoy&quot;             &quot;Donnokkhoum&quot;        &quot;Donpa-Mai&quot;         
+ [25] &quot;Donxingsou&quot;         &quot;Doung-Kang&quot;         &quot;Fay&quot;                &quot;Gnapha&quot;             &quot;Haikham&quot;            &quot;Hatsadi&quot;           
+ [31] &quot;Hongkaikeo&quot;         &quot;Hongke&quot;             &quot;Hongkha&quot;            &quot;Hongsouphap&quot;        &quot;Hongxeng&quot;           &quot;Houyhom&quot;           
+ [37] &quot;Houyhong&quot;           &quot;Kangmor&quot;            &quot;Kaognot&quot;            &quot;Kaoliao&quot;            &quot;Khamngoy&quot;           &quot;Khamsavat&quot;         
+ [43] &quot;Khoknin&quot;            &quot;Khoualouang&quot;        &quot;Khounta-Tha&quot;        &quot;Khounta-Thong&quot;      &quot;Kokhae&quot;             &quot;Kouay&quot;             
+ [49] &quot;Lakhin&quot;             &quot;Mai&quot;                &quot;Mixai&quot;              &quot;Muang-Noy&quot;          &quot;Muangva-Tha&quot;        &quot;Muangva-Thong&quot;     
+ [55] &quot;Nahe&quot;               &quot;Nakhoay-Kang&quot;       &quot;Nakhoay-Tai&quot;        &quot;Namkieng tai&quot;       &quot;Naxai&quot;              &quot;Naxayneua&quot;         
+ [61] &quot;Nongbon&quot;            &quot;Nongbouathong-Nua&quot;  &quot;Nongbouathong-Tai&quot;  &quot;Nongbuk-Nua&quot;        &quot;Nongbuk-Tai&quot;        &quot;Nongchan&quot;          
+ [67] &quot;Nongdouang-Nua&quot;     &quot;Nongdouang-Tai&quot;     &quot;Nongdouang-Thong&quot;   &quot;Nongniang&quot;          &quot;Nongniao&quot;           &quot;Nongpanai&quot;         
+ [73] &quot;Nongping&quot;           &quot;Nongsangtho&quot;        &quot;Nongteng-Nua&quot;       &quot;Nongteng-Tai&quot;       &quot;Nongtha-Nua&quot;        &quot;Nongtha-Tai&quot;       
+ [79] &quot;Nonkhilek&quot;          &quot;Nonkho-Nua&quot;         &quot;Nonkho-Tai&quot;         &quot;Nonsanga&quot;           &quot;Nonsavan&quot;           &quot;Oupmoung&quot;          
+ [85] &quot;Pakpeng&quot;            &quot;Pakthang&quot;           &quot;Phanman&quot;            &quot;Phapho&quot;             &quot;Phaun haung&quot;        &quot;Phaun ngam neung&quot;  
+ [91] &quot;Phava&quot;              &quot;Phaxai&quot;             &quot;Phiavat&quot;            &quot;Phonpapao&quot;          &quot;Phonsa-At&quot;          &quot;Phonsavan-Nua&quot;     
+ [97] &quot;Phonsavan-Tai&quot;      &quot;Phonsavat-Nua&quot;      &quot;Phonsavat-Tai&quot;      &quot;Phonsinouan&quot;        &quot;Phonsomboun&quot;        &quot;Phonthan&quot;          
+[103] &quot;Phontongchommani&quot;   &quot;Phontongsavat&quot;      &quot;Phonxai&quot;            &quot;Sa phang kha nong&quot;  &quot;Salakhamneua&quot;       &quot;Sangveuy&quot;          
+[109] &quot;Sanord&quot;             &quot;Saphangmo&quot;          &quot;Saphanthong&quot;        &quot;Saphanthong-Nua&quot;    &quot;Saphanthong-Tai&quot;    &quot;Saylom&quot;            
+[115] &quot;Saysathan&quot;          &quot;Sibounhuang&quot;        &quot;Sibounhuang-Tha&quot;    &quot;Sibounhuang-Thong&quot;  &quot;Sidamdouan&quot;         &quot;Sihom&quot;             
+[121] &quot;Sikhai-Tha&quot;         &quot;Sikhai-thong&quot;       &quot;Simuang&quot;            &quot;Sisangvon&quot;          &quot;Sisavat&quot;            &quot;Sithan-Nua&quot;        
+[127] &quot;Sixomxun&quot;           &quot;Somsanga&quot;           &quot;Somvangtay&quot;         &quot;Songkhouakangsaen&quot;  &quot;Souanmon&quot;           &quot;Tatthong&quot;          
+[133] &quot;Tha dean deng nuea&quot; &quot;Tha deanh deng tay&quot; &quot;Thanalang&quot;          &quot;Thaphalanxai&quot;       &quot;Thatlouang-Kang&quot;    &quot;Thatlouang-Nua&quot;    
+[139] &quot;Thatlouang-Tai&quot;     &quot;Thinthand&quot;          &quot;Thinthieng&quot;         &quot;Thintom&quot;            &quot;Thong-Kang&quot;         &quot;Thongkhankham&quot;     
+[145] &quot;Thongpong&quot;          &quot;Thongsangnang&quot;      &quot;Thongtoum&quot;          &quot;Vangma&quot;             &quot;Vangxay&quot;            &quot;Vatchan&quot;           
+[151] &quot;Vatsop&quot;             &quot;Vattaignai-Tha&quot;     &quot;Vattaignai-Thong&quot;   &quot;Vattainoy-Tha&quot;      &quot;Vattainoy-Thong&quot;    &quot;Viangchaleun&quot;      
+[157] &quot;Viangkham&quot;          &quot;Viangsavan&quot;         &quot;Xamket&quot;             &quot;Xamkhe&quot;             &quot;Xiangda&quot;            &quot;Xianggnun&quot;         
+[163] &quot;Xok-Gnai&quot;           &quot;Xok-Noy&quot;           </code></pre>
+<pre class="r"><code>&gt; raw_qgis &lt;- st_read(&quot;../../raw_data/Lao Statistics Bureau/QGIS/Modified Village/Vientiane.shp&quot;)
+Reading layer `Vientiane&#39; from data source `/Users/choisy/Dropbox/aaa/projects/Ecomore2/raw_data/Lao Statistics Bureau/QGIS/Modified Village/Vientiane.shp&#39; using driver `ESRI Shapefile&#39;
+Simple feature collection with 474 features and 44 fields (with 2 geometries empty)
+geometry type:  MULTIPOLYGON
+dimension:      XY
+bbox:           xmin: 11355930 ymin: 2014695 xmax: 11483100 ymax: 2088978
+epsg (SRID):    3857
+proj4string:    +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs</code></pre>
 
 
 

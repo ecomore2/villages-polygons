@@ -8,6 +8,8 @@ output:
   pdf_document:
     toc: yes
 <!-- bibliography: references.bib -->
+editor_options: 
+  chunk_output_type: console
 ---
 
 <!--
@@ -48,5 +50,43 @@ knitr::opts_chunk$set(margin = TRUE, prompt = TRUE, comment = "",
                       fig.width = 4.24725, fig.retina = 2, fig.align = "center")
 
 options(width = 137)
+```
+
+```{r}
+library(dplyr)
+library(sf)
+```
+
+```{r}
+decide <- "../../cleaned_data/GIS/Layers/Lao Decide/data-827086/data.shp" %>%
+  st_read() %>% 
+  select(uscne, uucne) %>% 
+  transmute(district = sub(" *District *$", "", uscne),
+            village = sub("^ *B\\. *", "", uucne))
+```
+
+This is the one sent by Olivier through Slack on June 21st:
+
+```{r}
+olivier <- "../../cleaned_data/GIS/Layers/Modified Villages/VIllage1806.shp" %>% 
+  st_read(crs = 4326) %>% 
+  transmute(village = Name)
+```
+
+```{r}
+pacs <- readr::read_csv("../census/data/census.csv",
+                        col_types = paste(c("ddccciiiiilllc", rep("d", 246)), collapse = ""))
+```
+
+```{r}
+sort(setdiff(olivier$village, pacs$Village_Name))
+```
+
+```{r}
+sort(setdiff(pacs$Village_Name, olivier$village))
+```
+
+```{r}
+raw_qgis <- st_read("../../raw_data/Lao Statistics Bureau/QGIS/Modified Village/Vientiane.shp")
 ```
 
